@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
         mPrefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
 
         // Clear cache
-        // mPrefs.edit().clear().apply();
+        mPrefs.edit().clear().apply();
 
         if (savedInstanceState != null) {
             mCurrentIndex = savedInstanceState.getInt(KEY_INDEX, 0);

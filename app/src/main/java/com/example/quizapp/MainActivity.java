@@ -2,6 +2,7 @@ package com.example.quizapp;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -27,6 +28,10 @@ public class MainActivity extends AppCompatActivity {
     private static final String KEY_FINISH_BUTTON_VISIBLE = "finish_button_visible";
     private static final String KEY_CHEATER = "cheater";
     private static final int REQUEST_CODE_CHEAT = 0;
+
+    // Shared preferences keys
+    private static final String PREFS_NAME = "QuizAppPrefs";
+    private static final String PREF_CHEATED_QUESTIONS = "cheated_questions";
 
     private Button mTrueButton;
     private Button mFalseButton;
@@ -55,6 +60,8 @@ public class MainActivity extends AppCompatActivity {
     private boolean mScoreDisplayed = false;
     // Flag to track if finish button is visible
     private boolean mFinishButtonVisible = false;
+    // SharedPreferences object
+    private SharedPreferences mPrefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +69,9 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "onCreate(Bundle) called");
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+
+        // Initialize SharedPreferences
+        mPrefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
 
         if (savedInstanceState != null) {
             mCurrentIndex = savedInstanceState.getInt(KEY_INDEX, 0);
@@ -86,6 +96,9 @@ public class MainActivity extends AppCompatActivity {
             mAnsweredQuestions = new boolean[mQuestionBank.length];
             mUserAnswers = new boolean[mQuestionBank.length];
             mIsCheater = new boolean[mQuestionBank.length];
+
+            // Load cheated questions from SharedPreferences
+            loadCheatedQuestionsState();
         }
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -176,8 +189,13 @@ public class MainActivity extends AppCompatActivity {
                 boolean answerIsTrue = mQuestionBank[mCurrentIndex].isAnswerTrue();
                 int questionResId = mQuestionBank[mCurrentIndex].getTextResId();
 
-                // Start CheatActivity
-                Intent intent = CheatActivity.newIntent(MainActivity.this, answerIsTrue, questionResId);
+                // Start CheatActivity with the question index
+                Intent intent = CheatActivity.newIntent(
+                        MainActivity.this,
+                        answerIsTrue,
+                        questionResId,
+                        mCurrentIndex
+                );
                 startActivityForResult(intent, REQUEST_CODE_CHEAT);
             }
         });
@@ -189,6 +207,44 @@ public class MainActivity extends AppCompatActivity {
                 displayFinalScore();
             }
         });
+    }
+
+    // Fix for Loophole 2 & 3: Save cheated questions to persistent storage
+    private void saveCheatedQuestionsState() {
+        SharedPreferences.Editor editor = mPrefs.edit();
+        StringBuilder cheatedQuestions = new StringBuilder();
+
+        for (int i = 0; i < mIsCheater.length; i++) {
+            if (mIsCheater[i]) {
+                cheatedQuestions.append(i).append(",");
+            }
+        }
+
+        editor.putString(PREF_CHEATED_QUESTIONS, cheatedQuestions.toString());
+        editor.apply();
+    }
+
+    private void loadCheatedQuestionsState() {
+        String cheatedStr = mPrefs.getString(PREF_CHEATED_QUESTIONS, "");
+        if (!cheatedStr.isEmpty()) {
+            String[] cheatedIndices = cheatedStr.split(",");
+            for (String index : cheatedIndices) {
+                if (!index.isEmpty()) {
+                    try {
+                        int i = Integer.parseInt(index);
+                        if (i >= 0 && i < mIsCheater.length) {
+                            mIsCheater[i] = true;
+                            // Also mark the question as answered since they cheated
+                            mAnsweredQuestions[i] = true;
+                            // Set user answer to the correct answer (they cheated)
+                            mUserAnswers[i] = mQuestionBank[i].isAnswerTrue();
+                        }
+                    } catch (NumberFormatException e) {
+                        Log.e(TAG, "Error parsing cheated question index", e);
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -206,18 +262,29 @@ public class MainActivity extends AppCompatActivity {
 
             // Check if the user cheated
             boolean wasAnswerShown = CheatActivity.wasAnswerShown(data);
-            if (wasAnswerShown) {
-                mIsCheater[mCurrentIndex] = true;
+            // Get the question index from the result
+            int questionIndex = CheatActivity.getQuestionIndex(data);
 
-                // If user cheats, consider the question answered
-                if (!mAnsweredQuestions[mCurrentIndex]) {
-                    mAnsweredQuestions[mCurrentIndex] = true;
-                    // Store the correct answer as user's answer (they cheated!)
-                    mUserAnswers[mCurrentIndex] = mQuestionBank[mCurrentIndex].isAnswerTrue();
-                    // Disable answer buttons since question is considered answered
-                    disableAnswerButtons();
-                    // Show judgment toast
-                    Toast.makeText(this, R.string.judgment_toast, Toast.LENGTH_SHORT).show();
+            // Only process if we have a valid question index
+            if (questionIndex >= 0 && questionIndex < mIsCheater.length) {
+                if (wasAnswerShown) {
+                    // Mark this specific question as cheated
+                    mIsCheater[questionIndex] = true;
+
+                    // Fix for Loophole 2: Save cheat state to persistent storage
+                    saveCheatedQuestionsState();
+
+                    // If this is the current question and it's not already answered
+                    if (questionIndex == mCurrentIndex && !mAnsweredQuestions[questionIndex]) {
+                        mAnsweredQuestions[questionIndex] = true;
+                        // Store the correct answer as user's answer (they cheated!)
+                        mUserAnswers[questionIndex] = mQuestionBank[questionIndex].isAnswerTrue();
+                        // Disable answer buttons since question is considered answered
+                        disableAnswerButtons();
+                        // Show judgment toast
+                        Toast.makeText(this, R.string.judgment_toast, Toast.LENGTH_SHORT).show();
+                    }
+
                     // Check if all questions are now answered
                     checkQuizCompletion();
                 }
@@ -229,6 +296,10 @@ public class MainActivity extends AppCompatActivity {
     public void onStart() {
         super.onStart();
         Log.d(TAG, "onStart() called");
+
+        // Reload cheated questions state when app starts
+        loadCheatedQuestionsState();
+        updateQuestion();
     }
 
     @Override
@@ -241,6 +312,9 @@ public class MainActivity extends AppCompatActivity {
     public void onPause() {
         super.onPause();
         Log.d(TAG, "onPause() called");
+
+        // Save cheated questions state when app pauses
+        saveCheatedQuestionsState();
     }
 
     @Override
@@ -372,5 +446,8 @@ public class MainActivity extends AppCompatActivity {
 
         // Mark score as displayed
         mScoreDisplayed = true;
+
+        // Reset the app for next quiz
+        // mPrefs.edit().clear().apply(); // Uncomment if you want to clear cheat history between quizzes
     }
 }

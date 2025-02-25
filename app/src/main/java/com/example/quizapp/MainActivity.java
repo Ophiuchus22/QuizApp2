@@ -73,6 +73,9 @@ public class MainActivity extends AppCompatActivity {
         // Initialize SharedPreferences
         mPrefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
 
+        // Add this near the beginning of onCreate, after initializing SharedPreferences
+        mPrefs.edit().clear().apply();
+
         if (savedInstanceState != null) {
             mCurrentIndex = savedInstanceState.getInt(KEY_INDEX, 0);
             mAnsweredQuestions = savedInstanceState.getBooleanArray(KEY_ANSWERED_QUESTIONS);

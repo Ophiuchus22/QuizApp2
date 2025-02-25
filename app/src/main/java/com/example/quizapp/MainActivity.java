@@ -27,11 +27,14 @@ public class MainActivity extends AppCompatActivity {
     private static final String KEY_SCORE_DISPLAYED = "score_displayed";
     private static final String KEY_FINISH_BUTTON_VISIBLE = "finish_button_visible";
     private static final String KEY_CHEATER = "cheater";
+    private static final String KEY_REMAINING_CHEATS = "remaining_cheats";
     private static final int REQUEST_CODE_CHEAT = 0;
+    private static final int MAX_CHEATS = 3; // Maximum number of cheats allowed
 
     // Shared preferences keys
     private static final String PREFS_NAME = "QuizAppPrefs";
     private static final String PREF_CHEATED_QUESTIONS = "cheated_questions";
+    private static final String PREF_REMAINING_CHEATS = "remaining_cheats";
 
     private Button mTrueButton;
     private Button mFalseButton;
@@ -40,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     private ImageButton mNextButton;
     private ImageButton mPrevButton;
     private TextView mQuestionTextView;
+    private TextView mCheatTokensTextView; // New TextView for displaying remaining cheat tokens
 
     private Question[] mQuestionBank = new Question[] {
             new Question(R.string.question_australia, true),
@@ -60,6 +64,8 @@ public class MainActivity extends AppCompatActivity {
     private boolean mScoreDisplayed = false;
     // Flag to track if finish button is visible
     private boolean mFinishButtonVisible = false;
+    // Number of remaining cheats
+    private int mRemainingCheats = MAX_CHEATS;
     // SharedPreferences object
     private SharedPreferences mPrefs;
 
@@ -74,7 +80,23 @@ public class MainActivity extends AppCompatActivity {
         mPrefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
 
         // Clear cache
-        mPrefs.edit().clear().apply();
+        // mPrefs.edit().clear().apply();
+
+        if (savedInstanceState == null) {
+            // Check if this is a fresh app launch by using a timestamp
+            long lastUseTime = mPrefs.getLong("last_use_time", 0);
+            long currentTime = System.currentTimeMillis();
+
+            // If app was last used more than 5 minutes ago or never used, clear preferences
+            // This time threshold can be adjusted based on your needs
+            if (lastUseTime == 0 || currentTime - lastUseTime > 5 * 1000) {
+                mPrefs.edit().clear().apply();
+                Log.d(TAG, "Cleared preferences - fresh app launch");
+            }
+
+            // Save current time for next check
+            mPrefs.edit().putLong("last_use_time", currentTime).apply();
+        }
 
         if (savedInstanceState != null) {
             mCurrentIndex = savedInstanceState.getInt(KEY_INDEX, 0);
@@ -83,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
             mScoreDisplayed = savedInstanceState.getBoolean(KEY_SCORE_DISPLAYED, false);
             mFinishButtonVisible = savedInstanceState.getBoolean(KEY_FINISH_BUTTON_VISIBLE, false);
             mIsCheater = savedInstanceState.getBooleanArray(KEY_CHEATER);
+            mRemainingCheats = savedInstanceState.getInt(KEY_REMAINING_CHEATS, MAX_CHEATS);
 
             // If the arrays are null (first time loading), initialize them
             if (mAnsweredQuestions == null) {
@@ -99,6 +122,9 @@ public class MainActivity extends AppCompatActivity {
             mAnsweredQuestions = new boolean[mQuestionBank.length];
             mUserAnswers = new boolean[mQuestionBank.length];
             mIsCheater = new boolean[mQuestionBank.length];
+
+            // Load remaining cheats from SharedPreferences (or use default if not found)
+            mRemainingCheats = mPrefs.getInt(PREF_REMAINING_CHEATS, MAX_CHEATS);
 
             // Load cheated questions from SharedPreferences
             loadCheatedQuestionsState();
@@ -117,9 +143,13 @@ public class MainActivity extends AppCompatActivity {
         mFinishButton = (Button) findViewById(R.id.finish_button);
         mNextButton = (ImageButton) findViewById(R.id.next_button);
         mPrevButton = (ImageButton) findViewById(R.id.prev_button);
+        mCheatTokensTextView = (TextView) findViewById(R.id.cheat_tokens_text_view);
 
         // Initially hide the finish button
         mFinishButton.setVisibility(View.GONE);
+
+        // Update the cheat tokens text view
+        updateCheatTokensDisplay();
 
         updateQuestion();
 
@@ -188,6 +218,12 @@ public class MainActivity extends AppCompatActivity {
         mCheatButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // Check if any cheat tokens remain
+                if (mRemainingCheats <= 0) {
+                    Toast.makeText(MainActivity.this, R.string.no_cheats_remaining, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 // Get the answer for the current question
                 boolean answerIsTrue = mQuestionBank[mCurrentIndex].isAnswerTrue();
                 int questionResId = mQuestionBank[mCurrentIndex].getTextResId();
@@ -212,6 +248,23 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    // Method to update the cheat tokens display
+    private void updateCheatTokensDisplay() {
+        mCheatTokensTextView.setText(getString(R.string.cheats_remaining, mRemainingCheats));
+
+        // Disable cheat button if no tokens remain
+        if (mRemainingCheats <= 0) {
+            mCheatButton.setEnabled(false);
+        }
+    }
+
+    // Save remaining cheats to SharedPreferences
+    private void saveRemainingCheats() {
+        SharedPreferences.Editor editor = mPrefs.edit();
+        editor.putInt(PREF_REMAINING_CHEATS, mRemainingCheats);
+        editor.apply();
+    }
+
     // Fix for Loophole 2 & 3: Save cheated questions to persistent storage
     private void saveCheatedQuestionsState() {
         SharedPreferences.Editor editor = mPrefs.edit();
@@ -225,6 +278,9 @@ public class MainActivity extends AppCompatActivity {
 
         editor.putString(PREF_CHEATED_QUESTIONS, cheatedQuestions.toString());
         editor.apply();
+
+        // Also save remaining cheats
+        saveRemainingCheats();
     }
 
     private void loadCheatedQuestionsState() {
@@ -248,6 +304,9 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
+
+        // Load remaining cheats count
+        mRemainingCheats = mPrefs.getInt(PREF_REMAINING_CHEATS, MAX_CHEATS);
     }
 
     @Override
@@ -273,6 +332,13 @@ public class MainActivity extends AppCompatActivity {
                 if (wasAnswerShown) {
                     // Mark this specific question as cheated
                     mIsCheater[questionIndex] = true;
+
+                    // Decrement remaining cheats
+                    if (mRemainingCheats > 0) {
+                        mRemainingCheats--;
+                        // Update the tokens display
+                        updateCheatTokensDisplay();
+                    }
 
                     // Fix for Loophole 2: Save cheat state to persistent storage
                     saveCheatedQuestionsState();
@@ -303,6 +369,7 @@ public class MainActivity extends AppCompatActivity {
         // Reload cheated questions state when app starts
         loadCheatedQuestionsState();
         updateQuestion();
+        updateCheatTokensDisplay();
     }
 
     @Override
@@ -318,6 +385,9 @@ public class MainActivity extends AppCompatActivity {
 
         // Save cheated questions state when app pauses
         saveCheatedQuestionsState();
+
+        // Save current time
+        mPrefs.edit().putLong("last_use_time", System.currentTimeMillis()).apply();
     }
 
     @Override
@@ -330,6 +400,7 @@ public class MainActivity extends AppCompatActivity {
         savedInstanceState.putBoolean(KEY_SCORE_DISPLAYED, mScoreDisplayed);
         savedInstanceState.putBoolean(KEY_FINISH_BUTTON_VISIBLE, mFinishButtonVisible);
         savedInstanceState.putBooleanArray(KEY_CHEATER, mIsCheater);
+        savedInstanceState.putInt(KEY_REMAINING_CHEATS, mRemainingCheats);
     }
 
     @Override
@@ -357,8 +428,9 @@ public class MainActivity extends AppCompatActivity {
             enableAnswerButtons();
         }
 
-        // Update cheat button state - disable if already answered
-        mCheatButton.setEnabled(!mAnsweredQuestions[mCurrentIndex]);
+        // Update cheat button state - disable if already answered or no cheat tokens
+        boolean canCheat = !mAnsweredQuestions[mCurrentIndex] && mRemainingCheats > 0;
+        mCheatButton.setEnabled(canCheat);
     }
 
     private void checkAnswer(boolean userPressedTrue) {

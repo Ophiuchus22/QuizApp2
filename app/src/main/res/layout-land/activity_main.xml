@@ -66,13 +66,22 @@
         android:layout_marginBottom="16dp"
         android:text="@string/cheat_button" />
 
+    <!-- Fixed Cheat Tokens TextView with proper positioning -->
+    <TextView
+        android:id="@+id/cheat_tokens_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="60dp"
+        android:textSize="14sp" />
+
     <!-- Finish Button -->
     <Button
         android:id="@+id/finish_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
-        android:layout_marginBottom="72dp"
+        android:layout_marginBottom="120dp"
         android:text="@string/finish_button"
         android:visibility="gone" />
 </FrameLayout>

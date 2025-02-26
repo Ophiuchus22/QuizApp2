@@ -83,12 +83,10 @@ public class MainActivity extends AppCompatActivity {
         // mPrefs.edit().clear().apply();
 
         if (savedInstanceState == null) {
-            // Check if this is a fresh app launch by using a timestamp
+
             long lastUseTime = mPrefs.getLong("last_use_time", 0);
             long currentTime = System.currentTimeMillis();
 
-            // If app was last used more than 5 minutes ago or never used, clear preferences
-            // This time threshold can be adjusted based on your needs
             if (lastUseTime == 0 || currentTime - lastUseTime > 5 * 1000) {
                 mPrefs.edit().clear().apply();
                 Log.d(TAG, "Cleared preferences - fresh app launch");

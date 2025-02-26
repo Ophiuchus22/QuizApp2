@@ -193,6 +193,8 @@ public class MainActivity extends AppCompatActivity {
                 mAnsweredQuestions[mCurrentIndex] = true;
                 // Disable both buttons
                 disableAnswerButtons();
+                // Also disable the cheat button for this question
+                mCheatButton.setEnabled(false);
                 // Check if all questions have been answered to show finish button
                 checkQuizCompletion();
             }
@@ -208,6 +210,8 @@ public class MainActivity extends AppCompatActivity {
                 mAnsweredQuestions[mCurrentIndex] = true;
                 // Disable both buttons
                 disableAnswerButtons();
+                // Also disable the cheat button for this question
+                mCheatButton.setEnabled(false);
                 // Check if all questions have been answered to show finish button
                 checkQuizCompletion();
             }
@@ -348,6 +352,8 @@ public class MainActivity extends AppCompatActivity {
                         mUserAnswers[questionIndex] = mQuestionBank[questionIndex].isAnswerTrue();
                         // Disable answer buttons since question is considered answered
                         disableAnswerButtons();
+                        // Disable cheat button immediately for the current question
+                        mCheatButton.setEnabled(false);
                         // Show judgment toast
                         Toast.makeText(this, R.string.judgment_toast, Toast.LENGTH_SHORT).show();
                     }
@@ -374,6 +380,9 @@ public class MainActivity extends AppCompatActivity {
     public void onResume() {
         super.onResume();
         Log.d(TAG, "onResume() called");
+
+        // Update UI for current question when resuming
+        updateQuestion();
     }
 
     @Override
@@ -421,14 +430,14 @@ public class MainActivity extends AppCompatActivity {
         if (mAnsweredQuestions[mCurrentIndex]) {
             // If already answered, disable buttons
             disableAnswerButtons();
+            // Also disable cheat button
+            mCheatButton.setEnabled(false);
         } else {
             // If not answered yet, enable buttons
             enableAnswerButtons();
+            // Update cheat button state - enable if not answered and have cheat tokens
+            mCheatButton.setEnabled(mRemainingCheats > 0);
         }
-
-        // Update cheat button state - disable if already answered or no cheat tokens
-        boolean canCheat = !mAnsweredQuestions[mCurrentIndex] && mRemainingCheats > 0;
-        mCheatButton.setEnabled(canCheat);
     }
 
     private void checkAnswer(boolean userPressedTrue) {

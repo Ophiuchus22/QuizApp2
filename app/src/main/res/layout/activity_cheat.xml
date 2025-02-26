@@ -5,51 +5,102 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background_color"
+    android:padding="16dp"
     tools:context=".CheatActivity">
 
-    <TextView
-        android:id="@+id/cheat_warning_text_view"
-        android:layout_width="wrap_content"
+    <!-- Warning text with improved styling -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/warning_card"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="24dp"
-        android:text="@string/warning_text"
-        android:textSize="24sp"
-        app:layout_constraintBottom_toTopOf="@+id/cheat_question_text_view"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="4dp"
+        app:cardBackgroundColor="@color/warning_card_background"
+        app:layout_constraintBottom_toTopOf="@+id/question_card"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_chainStyle="packed" />
+        app:layout_constraintVertical_chainStyle="packed"
+        android:layout_marginBottom="24dp">
 
-    <TextView
-        android:id="@+id/cheat_question_text_view"
-        android:layout_width="wrap_content"
+        <TextView
+            android:id="@+id/cheat_warning_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="24dp"
+            android:text="@string/warning_text"
+            android:textSize="24sp"
+            android:textColor="@color/warning_text"
+            android:gravity="center" />
+    </androidx.cardview.widget.CardView>
+
+    <!-- Question card with elevation -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/question_card"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="24dp"
-        android:textSize="18sp"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="4dp"
         app:layout_constraintBottom_toTopOf="@+id/show_answer_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cheat_warning_text_view" />
+        app:layout_constraintTop_toBottomOf="@+id/warning_card"
+        android:layout_marginBottom="24dp">
 
+        <TextView
+            android:id="@+id/cheat_question_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="24dp"
+            android:textSize="18sp"
+            android:textColor="@color/primary_text"
+            android:gravity="center"
+            android:minHeight="80dp" />
+    </androidx.cardview.widget.CardView>
+
+    <!-- Show answer button with improved styling -->
     <Button
         android:id="@+id/show_answer_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/show_answer_button"
+        android:backgroundTint="@color/show_answer_button"
+        android:textColor="@color/button_text"
+        android:paddingStart="32dp"
+        android:paddingEnd="32dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp"
+        app:layout_constraintBottom_toTopOf="@+id/answer_card"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/question_card"
+        android:layout_marginBottom="24dp" />
+
+    <!-- Answer card with elevation -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/answer_card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="4dp"
+        app:cardBackgroundColor="@color/answer_card_background"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cheat_question_text_view" />
+        app:layout_constraintTop_toBottomOf="@+id/show_answer_button">
 
-    <TextView
-        android:id="@+id/answer_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="24dp"
-        android:textSize="18sp"
-        android:visibility="invisible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/show_answer_button" />
+        <TextView
+            android:id="@+id/answer_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="24dp"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/answer_text"
+            android:gravity="center"
+            android:visibility="invisible"
+            android:minHeight="80dp" />
+    </androidx.cardview.widget.CardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

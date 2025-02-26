@@ -4,80 +4,131 @@
     android:layout_height="match_parent"
     android:gravity="center"
     android:id="@+id/main"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/background_color"
+    android:padding="16dp">
 
+    <!-- App Title -->
     <TextView
-        android:id="@+id/question_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="24dp"
-        android:clickable="true"
-        android:gravity="center"
-        android:textSize="18sp" />
+        android:text="@string/app_title"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="@color/primary_text"
+        android:layout_marginBottom="24dp"/>
 
+    <!-- Question Card -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="4dp"
+        android:layout_marginBottom="24dp">
+
+        <TextView
+            android:id="@+id/question_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="24dp"
+            android:clickable="true"
+            android:gravity="center"
+            android:textSize="18sp"
+            android:textColor="@color/primary_text"
+            android:background="?attr/selectableItemBackground"
+            android:minHeight="120dp"/>
+    </androidx.cardview.widget.CardView>
+
+    <!-- True/False Buttons -->
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:layout_marginBottom="24dp">
 
         <Button
             android:id="@+id/true_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/true_button" />
+            android:text="@string/true_button"
+            android:background="@drawable/true_button_selector"
+            android:textColor="@color/button_text"
+            android:layout_marginEnd="8dp"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"/>
 
         <Button
             android:id="@+id/false_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/false_button" />
+            android:text="@string/false_button"
+            android:background="@drawable/false_button_selector"
+            android:textColor="@color/button_text"
+            android:layout_marginStart="8dp"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"/>
     </LinearLayout>
 
+    <!-- Cheat Button with Material Design -->
     <Button
         android:id="@+id/cheat_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:text="@string/cheat_button" />
+        android:text="@string/cheat_button"
+        android:layout_marginTop="8dp"
+        android:backgroundTint="@color/cheat_button"
+        android:paddingStart="32dp"
+        android:paddingEnd="32dp"/>
 
+    <!-- Cheat Tokens Text -->
     <TextView
         android:id="@+id/cheat_tokens_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="14sp"
-        android:layout_marginTop="8dp" />
+        android:textColor="@color/secondary_text"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp"/>
 
+    <!-- Navigation Controls -->
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center"
-        android:layout_marginTop="8dp">
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp">
 
         <ImageButton
             android:id="@+id/prev_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
             android:src="@drawable/arrow_left"
             android:contentDescription="@string/prev_button"
             android:padding="12dp"
-            android:layout_marginEnd="8dp"/>
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/circular_button"/>
 
         <ImageButton
             android:id="@+id/next_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
             android:src="@drawable/arrow_right"
             android:contentDescription="@string/next_button"
             android:padding="12dp"
-            android:layout_marginStart="8dp"/>
+            android:layout_marginStart="16dp"
+            android:background="@drawable/circular_button"/>
     </LinearLayout>
 
+    <!-- Finish Button -->
     <Button
         android:id="@+id/finish_button"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Finish Quiz"
-        android:layout_marginTop="24dp"
+        android:text="@string/finish_button"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="@color/finish_button"
+        android:textColor="@color/button_text"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp"
         android:visibility="gone" />
 </LinearLayout>

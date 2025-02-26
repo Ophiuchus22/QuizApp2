@@ -2,41 +2,42 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/main">
+    android:id="@+id/main"
+    android:background="@color/background_color">
 
-    <LinearLayout
+    <!-- App Title at the Top -->
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_gravity="bottom|end"
-        android:layout_marginBottom="16dp"
-        android:layout_marginEnd="16dp">
+        android:text="@string/app_title"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@color/primary_text"
+        android:layout_gravity="top|center_horizontal"
+        android:layout_marginTop="16dp"/>
 
-        <ImageButton
-            android:id="@+id/prev_button"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@drawable/arrow_left"
-            android:contentDescription="@string/prev_button"
-            android:padding="12dp"/>
-
-        <ImageButton
-            android:id="@+id/next_button"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@drawable/arrow_right"
-            android:contentDescription="@string/next_button"
-            android:padding="12dp"/>
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/question_text_view"
-        android:layout_width="wrap_content"
+    <!-- Question Card -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="80dp"
-        android:padding="24dp"/>
+        android:layout_marginStart="48dp"
+        android:layout_marginEnd="48dp"
+        android:layout_marginTop="50dp"
+        android:elevation="4dp">
 
+        <TextView
+            android:id="@+id/question_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:padding="24dp"
+            android:textSize="18sp"
+            android:textColor="@color/primary_text"
+            android:gravity="center"/>
+    </androidx.cardview.widget.CardView>
+
+    <!-- True/False Button Layout -->
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -48,13 +49,50 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/true_button"
-            android:layout_marginEnd="8dp"/>
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/true_button_selector"
+            android:textColor="@color/button_text"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"/>
 
         <Button
             android:id="@+id/false_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/false_button"/>
+            android:text="@string/false_button"
+            android:background="@drawable/false_button_selector"
+            android:textColor="@color/button_text"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"/>
+    </LinearLayout>
+
+    <!-- Navigation Controls at Bottom Right -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="bottom|end"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="16dp">
+
+        <ImageButton
+            android:id="@+id/prev_button"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:src="@drawable/arrow_left"
+            android:contentDescription="@string/prev_button"
+            android:padding="12dp"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/circular_button"/>
+
+        <ImageButton
+            android:id="@+id/next_button"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:src="@drawable/arrow_right"
+            android:contentDescription="@string/next_button"
+            android:padding="12dp"
+            android:background="@drawable/circular_button"/>
     </LinearLayout>
 
     <!-- Cheat Button -->
@@ -64,16 +102,20 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
         android:layout_marginBottom="16dp"
-        android:text="@string/cheat_button" />
+        android:text="@string/cheat_button"
+        android:backgroundTint="@color/cheat_button"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp" />
 
-    <!-- Fixed Cheat Tokens TextView with proper positioning -->
+    <!-- Cheat Tokens TextView with proper positioning -->
     <TextView
         android:id="@+id/cheat_tokens_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
         android:layout_marginBottom="60dp"
-        android:textSize="14sp" />
+        android:textSize="14sp"
+        android:textColor="@color/secondary_text" />
 
     <!-- Finish Button -->
     <Button
@@ -81,7 +123,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
-        android:layout_marginBottom="120dp"
+        android:layout_marginBottom="100dp"
         android:text="@string/finish_button"
-        android:visibility="gone" />
+        android:visibility="gone"
+        android:backgroundTint="@color/finish_button"
+        android:textColor="@color/button_text"
+        android:paddingStart="32dp"
+        android:paddingEnd="32dp" />
 </FrameLayout>

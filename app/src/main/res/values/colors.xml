@@ -1,5 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Original colors - keep these -->
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- New colors for the enhanced UI -->
+    <color name="background_color">#F5F5F5</color>
+    <color name="primary_text">#212121</color>
+    <color name="secondary_text">#757575</color>
+
+    <!-- Button colors -->
+    <color name="button_true">#4CAF50</color>    <!-- Green -->
+    <color name="button_false">#F44336</color>    <!-- Red -->
+    <color name="button_text">#FFFFFF</color>     <!-- White -->
+    <color name="cheat_button">#FF9800</color>    <!-- Orange -->
+    <color name="finish_button">#3F51B5</color>   <!-- Indigo -->
+    <color name="show_answer_button">#9C27B0</color> <!-- Purple -->
+
+    <!-- Card colors -->
+    <color name="warning_card_background">#FFF9C4</color> <!-- Light Yellow -->
+    <color name="warning_text">#FF6F00</color> <!-- Amber Dark -->
+    <color name="answer_card_background">#E1F5FE</color> <!-- Light Blue -->
+    <color name="answer_text">#0288D1</color> <!-- Blue -->
 </resources>

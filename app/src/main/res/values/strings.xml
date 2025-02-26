@@ -22,6 +22,7 @@
     <string name="correct_toast">Correct!</string>
     <string name="incorrect_toast">Incorrect!</string>
 
+    <string name="app_title">Quiz Challenge</string>
     <string name="finish_button">Finish Quiz</string>
 
     <string name="warning_text">Are you sure you want to do this?</string>

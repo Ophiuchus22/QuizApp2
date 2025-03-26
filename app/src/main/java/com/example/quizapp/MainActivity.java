@@ -295,10 +295,8 @@ public class MainActivity extends AppCompatActivity {
                         int i = Integer.parseInt(index);
                         if (i >= 0 && i < mIsCheater.length) {
                             mIsCheater[i] = true;
-                            // Also mark the question as answered since they cheated
-                            mAnsweredQuestions[i] = true;
-                            // Set user answer to the correct answer (they cheated)
-                            mUserAnswers[i] = mQuestionBank[i].isAnswerTrue();
+                            // Don't mark questions as answered just because they were cheated on
+                            // Don't set user answers automatically
                         }
                     } catch (NumberFormatException e) {
                         Log.e(TAG, "Error parsing cheated question index", e);
@@ -345,21 +343,10 @@ public class MainActivity extends AppCompatActivity {
                     // Fix for Loophole 2: Save cheat state to persistent storage
                     saveCheatedQuestionsState();
 
-                    // If this is the current question and it's not already answered
-                    if (questionIndex == mCurrentIndex && !mAnsweredQuestions[questionIndex]) {
-                        mAnsweredQuestions[questionIndex] = true;
-                        // Store the correct answer as user's answer (they cheated!)
-                        mUserAnswers[questionIndex] = mQuestionBank[questionIndex].isAnswerTrue();
-                        // Disable answer buttons since question is considered answered
-                        disableAnswerButtons();
-                        // Disable cheat button immediately for the current question
+                    // If this is the current question, disable the cheat button
+                    if (questionIndex == mCurrentIndex) {
                         mCheatButton.setEnabled(false);
-                        // Show judgment toast
-                        Toast.makeText(this, R.string.judgment_toast, Toast.LENGTH_SHORT).show();
                     }
-
-                    // Check if all questions are now answered
-                    checkQuizCompletion();
                 }
             }
         }
@@ -444,6 +431,15 @@ public class MainActivity extends AppCompatActivity {
         boolean answerIsTrue = mQuestionBank[mCurrentIndex].isAnswerTrue();
         int messageResId;
 
+        // Store user's answer
+        mUserAnswers[mCurrentIndex] = userPressedTrue;
+        // Mark this question as answered
+        mAnsweredQuestions[mCurrentIndex] = true;
+        // Disable both buttons
+        disableAnswerButtons();
+        // Also disable the cheat button for this question
+        mCheatButton.setEnabled(false);
+
         // Check if user cheated on this question
         if (mIsCheater[mCurrentIndex]) {
             messageResId = R.string.judgment_toast;
@@ -454,6 +450,9 @@ public class MainActivity extends AppCompatActivity {
         Toast toast = Toast.makeText(MainActivity.this, messageResId, Toast.LENGTH_SHORT);
         toast.setGravity(Gravity.TOP, 0, 0);
         toast.show();
+
+        // Check if all questions have been answered to show finish button
+        checkQuizCompletion();
     }
 
     // Helper method to disable answer buttons
